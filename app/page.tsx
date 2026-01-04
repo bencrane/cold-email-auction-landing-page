@@ -23,8 +23,62 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [isSubmitted]);
 
-  const handleSubmit = () => {
-    setIsSubmitted(true);
+  const [formData, setFormData] = useState({
+    companyName: '',
+    companyDomain: '',
+    email: '',
+    message: ''
+  });
+
+  const [errors, setErrors] = useState({
+    companyName: false,
+    companyDomain: false,
+    email: false,
+    message: false
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+    if (errors[id as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    const newErrors = {
+      companyName: !formData.companyName.trim(),
+      companyDomain: !formData.companyDomain.trim(),
+      email: !formData.email.trim(),
+      message: !formData.message.trim()
+    };
+
+    setErrors(newErrors);
+
+    if (!Object.values(newErrors).some(Boolean)) {
+      try {
+        await fetch('https://eosffd61t937pcq.m.pipedream.net', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      }
+      setIsSubmitted(true);
+    }
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setErrors({
+      companyName: false,
+      companyDomain: false,
+      email: false,
+      message: false
+    });
   };
 
   return (
@@ -56,7 +110,7 @@ export default function Home() {
                 onClick={() => setShowForm(true)}
                 className="bg-transparent text-white border-white hover:bg-white hover:text-black transition-colors rounded-none h-auto py-4 px-8 text-lg"
               >
-                Request Information
+                Submit Interest
               </Button>
             </motion.div>
           ) : (
@@ -68,35 +122,66 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="relative w-full max-w-[500px] bg-black border-2 border-white text-white p-8 rounded-none outline-none ring-0 focus:ring-0 focus:outline-none"
             >
-              <button
-                onClick={() => setShowForm(false)}
-                className="absolute right-4 top-4 text-white hover:text-gray-300 transition-colors"
-                aria-label="Close form"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              {!isSubmitted && (
+                <button
+                  onClick={handleCloseForm}
+                  className="absolute right-4 top-4 text-white hover:text-gray-300 transition-colors"
+                  aria-label="Close form"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
 
               {!isSubmitted ? (
                 <>
                   <div className="grid gap-6 py-4 [&_input]:bg-black [&_input]:text-white [&_input]:border-white [&_label]:text-white [&_textarea]:bg-black [&_textarea]:text-white [&_textarea]:border-white">
                     <div className="grid w-full gap-2">
-                      <Label htmlFor="fullName" className="font-bold text-left text-xs uppercase tracking-wider">*Full Name</Label>
-                      <Input id="fullName" className="rounded-none border-white h-10 text-sm" />
+                      <Label htmlFor="companyName" className="font-bold text-left text-xs uppercase flex items-center gap-0">
+                        <span className={errors.companyName ? "text-red-500" : "text-white"}>*</span><span className="tracking-wider">Company Name</span>
+                      </Label>
+                      <Input
+                        id="companyName"
+                        value={formData.companyName}
+                        onChange={handleInputChange}
+                        className="rounded-none border-white h-10 text-sm"
+                      />
                     </div>
 
                     <div className="grid w-full gap-2">
-                      <Label htmlFor="companyDomain" className="font-bold text-left text-xs uppercase tracking-wider">*Company Domain</Label>
-                      <Input id="companyDomain" className="rounded-none border-white h-10 text-sm" />
+                      <Label htmlFor="companyDomain" className="font-bold text-left text-xs uppercase flex items-center gap-0">
+                        <span className={errors.companyDomain ? "text-red-500" : "text-white"}>*</span><span className="tracking-wider">Company Domain</span>
+                      </Label>
+                      <Input
+                        id="companyDomain"
+                        value={formData.companyDomain}
+                        onChange={handleInputChange}
+                        className="rounded-none border-white h-10 text-sm"
+                      />
                     </div>
 
                     <div className="grid w-full gap-2">
-                      <Label htmlFor="email" className="font-bold text-left text-xs uppercase tracking-wider">*Email</Label>
-                      <Input id="email" type="email" className="rounded-none border-white h-10 text-sm" />
+                      <Label htmlFor="email" className="font-bold text-left text-xs uppercase flex items-center gap-0">
+                        <span className={errors.email ? "text-red-500" : "text-white"}>*</span><span className="tracking-wider">Email</span>
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="rounded-none border-white h-10 text-sm"
+                      />
                     </div>
 
                     <div className="grid w-full gap-2">
-                      <Label htmlFor="message" className="font-bold text-left text-xs uppercase tracking-wider">*Message</Label>
-                      <Textarea id="message" className="rounded-none border-white min-h-[120px] text-sm resize-none" />
+                      <Label htmlFor="message" className="font-bold text-left text-xs uppercase flex items-center gap-0">
+                        <span className={errors.message ? "text-red-500" : "text-white"}>*</span><span className="tracking-wider">Message</span>
+                      </Label>
+                      <Textarea
+                        id="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        className="rounded-none border-white min-h-[120px] text-sm resize-none"
+                      />
                     </div>
                   </div>
 
@@ -112,9 +197,10 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.8 }}
-                  className="flex flex-col items-center justify-center py-12"
+                  className="flex flex-col items-center justify-center py-12 space-y-4"
                 >
                   <p className="text-white text-xl text-center font-medium">We have received your message.</p>
+                  <p className="text-white text-sm text-center">Serious buyers will be contacted directly.</p>
                 </motion.div>
               )}
             </motion.div>
