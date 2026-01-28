@@ -1,5 +1,8 @@
 "use client";
 
+// MODE TOGGLE: Set to true for "Coming Soon" mode, false for normal functionality
+const COMING_SOON_MODE = true;
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,10 +110,14 @@ export default function Home() {
 
               <Button
                 variant="outline"
-                onClick={() => setShowForm(true)}
-                className="bg-transparent text-white border-white hover:bg-white hover:text-black transition-colors rounded-none h-auto py-4 px-8 text-lg"
+                onClick={COMING_SOON_MODE ? undefined : () => setShowForm(true)}
+                className={`bg-transparent text-white border-white transition-colors rounded-none h-auto py-4 px-8 text-lg ${
+                  COMING_SOON_MODE
+                    ? "cursor-default opacity-80"
+                    : "hover:bg-white hover:text-black"
+                }`}
               >
-                Submit Interest
+                {COMING_SOON_MODE ? "Coming Soon" : "Submit Interest"}
               </Button>
             </motion.div>
           ) : (
@@ -197,10 +204,11 @@ export default function Home() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.8 }}
-                  className="flex flex-col items-center justify-center py-12 space-y-4"
+                  className="flex flex-col items-center justify-center py-12"
                 >
-                  <p className="text-white text-xl text-center font-medium">We have received your message.</p>
-                  <p className="text-white text-sm text-center">Serious buyers will be contacted directly.</p>
+                  <p className="text-white text-xl text-center font-medium">
+                    We have received your message. Serious buyers will be contacted directly.
+                  </p>
                 </motion.div>
               )}
             </motion.div>
