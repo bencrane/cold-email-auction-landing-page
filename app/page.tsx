@@ -206,8 +206,9 @@ export default function Home() {
                   transition={{ duration: 0.8 }}
                   className="flex flex-col items-center justify-center py-12"
                 >
-                  <p className="text-white text-xl text-center font-medium">
-                    We have received your message. Serious buyers will be contacted directly.
+                  <p className="text-white text-lg text-center font-medium">
+                    We have received your message.<br />
+                    Serious buyers will be contacted directly.
                   </p>
                 </motion.div>
               )}
