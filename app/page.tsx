@@ -1,7 +1,7 @@
 "use client";
 
 // MODE TOGGLE: Set to true for "Coming Soon" mode, false for normal functionality
-const COMING_SOON_MODE = true;
+const COMING_SOON_MODE = false;
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
