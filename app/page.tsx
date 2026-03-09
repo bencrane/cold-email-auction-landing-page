@@ -85,7 +85,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
+    <div className="flex h-screen flex-col bg-black text-white overflow-hidden">
       <main className="flex flex-1 flex-col items-center justify-center w-full gap-8 p-4">
 
         <AnimatePresence mode="wait">

@@ -120,11 +120,12 @@
   /* Removed * selector to prevent unwanted borders */
   html, body {
     background-color: black;
-    overflow-x: hidden;
-  }
-
-  html {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
