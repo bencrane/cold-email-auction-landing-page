@@ -111,7 +111,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 onClick={COMING_SOON_MODE ? undefined : () => setShowForm(true)}
-                className={`bg-transparent text-white border-white transition-colors rounded-none h-auto py-4 px-8 text-lg ${
+                className={`hidden bg-transparent text-white border-white transition-colors rounded-none h-auto py-4 px-8 text-lg ${
                   COMING_SOON_MODE
                     ? "cursor-default opacity-80"
                     : "hover:bg-white hover:text-black"
