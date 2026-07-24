@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { PieChart, Pie, Cell } from "recharts";
 import { Slider } from "@/components/ui/slider";
-import { Building2, Globe, Scale, TrendingUp } from "lucide-react";
+import { Building2, Car, ChevronDown, Globe, Scale, TrendingUp } from "lucide-react";
 
 const TAX_RATE = 0.238; // Federal LTCG 20% + NIIT 3.8%
 const DOMAIN_BASIS = 1_000_000;
@@ -23,6 +23,11 @@ const ORDINARY_RATE = 0.37; // OperatingGroup exit allocation + all distribution
 // Comparison tab: share of deal value ascribed to DomainCo. A stated planning
 // assumption, not derived from the licensing model — disclosed on the page.
 const DOMAIN_DEAL_SHARE = 0.25;
+
+// Unit of account for the "why this matters" reveal. The Revuelto is the
+// current flagship — the Gallardo went out of production in 2013.
+const LAMBO_MODEL = "Lamborghini Revueltos";
+const LAMBO_PRICE = 600_000;
 
 function fmtM(v: number, decimals = 1) {
   return `$${(v / 1_000_000).toFixed(decimals)}M`;
@@ -1520,6 +1525,31 @@ function NewScenario({ controls }: { controls: NewControls }) {
   );
 }
 
+function LamboGrid({
+  count,
+  highlightFrom,
+  size = "h-4 w-4",
+}: {
+  count: number;
+  highlightFrom?: number;
+  size?: string;
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {Array.from({ length: count }, (_, i) => (
+        <Car
+          key={i}
+          className={`${size} ${
+            highlightFrom !== undefined && i >= highlightFrom
+              ? "text-emerald-400"
+              : "text-zinc-600"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
 function ComparisonScenario({ controls }: { controls: NewControls }) {
   const { exit, cmpTaxA } = deriveNewModel(controls);
 
@@ -1530,6 +1560,11 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
   const domainTax = domainValue * DOMAIN_GAINS_RATE;
   const opcoTax = opcoValue * ORDINARY_RATE;
   const tax = domainTax + opcoTax;
+
+  const [showWhy, setShowWhy] = useState(false);
+  const lambosA = Math.floor((exit - cmpTaxA) / LAMBO_PRICE);
+  const lambosB = Math.floor((exit - tax) / LAMBO_PRICE);
+  const extraLambos = lambosB - lambosA;
 
   return (
     <>
@@ -1697,6 +1732,91 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
         there is nothing to allocate to capital gains. Set the model on the
         Scenario B tab; this comparison follows it.
       </p>
+
+      {/* Why this matters */}
+      <div className="mt-20 flex flex-col items-center">
+        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+          Why this matters
+        </p>
+        <button
+          onClick={() => setShowWhy((v) => !v)}
+          aria-expanded={showWhy}
+          aria-label="Why this matters"
+          className="mt-4 flex h-12 w-12 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+        >
+          <ChevronDown
+            className={`h-5 w-5 transition-transform duration-300 ${
+              showWhy ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {showWhy && (
+          <motion.div
+            key="why"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="mt-10 grid grid-cols-2 items-start gap-6">
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6">
+                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                  Scenario A
+                </p>
+                <p className="mt-3 font-mono text-5xl font-semibold tabular-nums text-zinc-100">
+                  {lambosA}
+                </p>
+                <p className="mt-1 text-sm text-zinc-500">{LAMBO_MODEL}</p>
+                <div className="mt-6">
+                  <LamboGrid count={lambosA} />
+                </div>
+              </div>
+              <div className="rounded-xl border border-emerald-500/20 bg-zinc-900/40 p-6">
+                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-400/80">
+                  Scenario B
+                </p>
+                <p className="mt-3 font-mono text-5xl font-semibold tabular-nums text-zinc-100">
+                  {lambosB}
+                </p>
+                <p className="mt-1 text-sm text-zinc-500">{LAMBO_MODEL}</p>
+                {/* The extra ones light up in place, so the delta is visible
+                    without counting */}
+                <div className="mt-6">
+                  <LamboGrid count={lambosB} highlightFrom={lambosA} />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-emerald-500/40 bg-emerald-500/[0.06] px-8 py-8">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-400/80">
+                The difference
+              </p>
+              <div className="mt-5 flex items-center gap-7">
+                <span className="shrink-0 font-mono text-6xl font-semibold tabular-nums text-emerald-400">
+                  {extraLambos}
+                </span>
+                <LamboGrid
+                  count={extraLambos}
+                  highlightFrom={0}
+                  size="h-8 w-8"
+                />
+              </div>
+              <p className="mt-5 text-xl text-zinc-300">
+                extra {LAMBO_MODEL}, for signing different paperwork.
+              </p>
+            </div>
+
+            <p className="mt-4 font-mono text-[11px] leading-relaxed text-zinc-600">
+              Assumes {fmtDollars(LAMBO_PRICE)} per Revuelto. Excludes tax,
+              title, registration, insurance, and anywhere to put{" "}
+              {lambosB} of them.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
