@@ -379,29 +379,32 @@ export default function DemoPage() {
                       <label className="text-[13px] uppercase tracking-wider text-zinc-500">
                         Exit multiple
                       </label>
-                      <Slider
-                        className="mt-8 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
-                        min={30}
-                        max={75}
-                        step={1}
-                        value={[exitM]}
-                        onValueChange={([v]) => setExitM(v)}
-                      />
-                      <div className="relative mt-4 h-6">
-                        {[3, 4, 5].map((m) => {
-                          const valM = (m * ARR) / 1_000_000;
-                          const pct = ((valM - 30) / (75 - 30)) * 100;
-                          return (
-                            <button
-                              key={m}
-                              onClick={() => setExitM(Math.round(valM))}
-                              className="absolute -translate-x-1/2 font-mono text-sm tabular-nums text-zinc-600 transition-colors hover:text-zinc-300"
-                              style={{ left: `${pct}%` }}
-                            >
-                              {m}×
-                            </button>
-                          );
-                        })}
+                      <div className="mt-8 flex items-stretch gap-8">
+                        <Slider
+                          orientation="vertical"
+                          className="h-64 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
+                          min={30}
+                          max={75}
+                          step={1}
+                          value={[exitM]}
+                          onValueChange={([v]) => setExitM(v)}
+                        />
+                        <div className="relative h-64 w-12">
+                          {[3, 4, 5].map((m) => {
+                            const valM = (m * ARR) / 1_000_000;
+                            const pct = ((valM - 30) / (75 - 30)) * 100;
+                            return (
+                              <button
+                                key={m}
+                                onClick={() => setExitM(Math.round(valM))}
+                                className="absolute left-0 translate-y-1/2 font-mono text-sm tabular-nums text-zinc-600 transition-colors hover:text-zinc-300"
+                                style={{ bottom: `${pct}%` }}
+                              >
+                                {m}×
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
@@ -413,9 +416,6 @@ export default function DemoPage() {
                         decimals={0}
                         className="mt-3 block font-mono text-7xl font-semibold tabular-nums text-zinc-100"
                       />
-                      <p className="mt-3 font-mono text-xl tabular-nums text-zinc-400">
-                        {(exit / ARR).toFixed(1)}× ARR
-                      </p>
                     </div>
                   </div>
                 </div>
