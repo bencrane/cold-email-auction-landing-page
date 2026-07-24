@@ -13,6 +13,7 @@ import { Building2, Globe, TrendingUp } from "lucide-react";
 
 const TAX_RATE = 0.238; // Federal LTCG 20% + NIIT 3.8%
 const DOMAIN_BASIS = 1_000_000;
+const ARR = 13_200_000;
 
 function fmtM(v: number, decimals = 1) {
   return `$${(v / 1_000_000).toFixed(decimals)}M`;
@@ -271,35 +272,43 @@ export default function DemoPage() {
                 <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
                   Exit Economics
                 </h2>
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-6">
-                  <div className="flex items-center gap-10">
-                    <div className="flex-1">
-                      <label className="text-[13px] uppercase tracking-wider text-zinc-500">
-                        Enterprise exit value
-                      </label>
-                      <Slider
-                        className="mt-5"
-                        min={30}
-                        max={75}
-                        step={1}
-                        value={[exitM]}
-                        onValueChange={([v]) => setExitM(v)}
-                      />
-                      <div className="mt-2 flex justify-between font-mono text-[11px] text-zinc-600">
-                        <span>$30M</span>
-                        <span>$75M</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <AnimatedM
-                        value={exit}
-                        decimals={0}
-                        className="block font-mono text-5xl font-semibold tabular-nums text-zinc-100"
-                      />
-                      <p className="mt-1.5 font-mono text-sm tabular-nums text-zinc-500">
-                        {(exit / 13_200_000).toFixed(1)}× ARR
-                      </p>
-                    </div>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-10">
+                  <label className="text-[13px] uppercase tracking-wider text-zinc-500">
+                    Enterprise exit value
+                  </label>
+                  <div className="mt-4 flex items-baseline gap-4">
+                    <AnimatedM
+                      value={exit}
+                      decimals={0}
+                      className="font-mono text-6xl font-semibold tabular-nums text-zinc-100"
+                    />
+                    <span className="font-mono text-xl tabular-nums text-zinc-400">
+                      {(exit / ARR).toFixed(1)}× ARR
+                    </span>
+                  </div>
+                  <Slider
+                    className="mt-10"
+                    min={30}
+                    max={75}
+                    step={1}
+                    value={[exitM]}
+                    onValueChange={([v]) => setExitM(v)}
+                  />
+                  <div className="relative mt-3 h-5">
+                    {[3, 4, 5].map((m) => {
+                      const valM = (m * ARR) / 1_000_000;
+                      const pct = ((valM - 30) / (75 - 30)) * 100;
+                      return (
+                        <button
+                          key={m}
+                          onClick={() => setExitM(Math.round(valM))}
+                          className="absolute -translate-x-1/2 font-mono text-[11px] tabular-nums text-zinc-600 transition-colors hover:text-zinc-300"
+                          style={{ left: `${pct}%` }}
+                        >
+                          {m}×
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
