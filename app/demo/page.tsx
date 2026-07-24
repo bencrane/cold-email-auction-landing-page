@@ -24,10 +24,10 @@ const ORDINARY_RATE = 0.37; // OperatingGroup exit allocation + all distribution
 // assumption, not derived from the licensing model — disclosed on the page.
 const DOMAIN_DEAL_SHARE = 0.25;
 
-// Unit of account for the "why this matters" reveal. The Revuelto is the
-// current flagship — the Gallardo went out of production in 2013.
-const LAMBO_MODEL = "Lamborghini Revueltos";
-const LAMBO_PRICE = 600_000;
+// Unit of account for the "why this matters" reveal. Gallardo at its original
+// MSRP — out of production since 2013, chosen deliberately.
+const LAMBO_MODEL = "Lamborghini Gallardos";
+const LAMBO_PRICE = 200_000;
 
 function fmtM(v: number, decimals = 1) {
   return `$${(v / 1_000_000).toFixed(decimals)}M`;
@@ -1805,12 +1805,12 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
                 />
               </div>
               <p className="mt-5 text-xl text-zinc-300">
-                extra {LAMBO_MODEL}, for signing different paperwork.
+                extra {LAMBO_MODEL}
               </p>
             </div>
 
             <p className="mt-4 font-mono text-[11px] leading-relaxed text-zinc-600">
-              Assumes {fmtDollars(LAMBO_PRICE)} per Revuelto. Excludes tax,
+              Assumes {fmtDollars(LAMBO_PRICE)} per Gallardo. Excludes tax,
               title, registration, insurance, and anywhere to put{" "}
               {lambosB} of them.
             </p>
