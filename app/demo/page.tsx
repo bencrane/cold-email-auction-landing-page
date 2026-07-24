@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   motion,
   AnimatePresence,
@@ -117,6 +117,56 @@ function SliderBlock({
   );
 }
 
+const ACCESS_CODE = "access123!";
+
+function AccessGate({ onUnlock }: { onUnlock: () => void }) {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState(false);
+
+  const submit = () => {
+    if (code === ACCESS_CODE) {
+      try {
+        sessionStorage.setItem("demo-access", "granted");
+      } catch {}
+      onUnlock();
+    } else {
+      setError(true);
+    }
+  };
+
+  return (
+    <div className="flex h-dvh items-center justify-center bg-zinc-950 text-zinc-100">
+      <div className="w-full max-w-sm px-6">
+        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+          ColdEmail.com
+        </p>
+        <label className="mt-8 block text-[13px] uppercase tracking-wider text-zinc-500">
+          Access code
+        </label>
+        <input
+          type="password"
+          autoFocus
+          value={code}
+          onChange={(e) => {
+            setCode(e.target.value);
+            setError(false);
+          }}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+          className={`mt-3 w-full rounded-lg border bg-zinc-900 px-4 py-3 font-mono text-sm text-zinc-100 outline-none transition-colors focus:border-zinc-500 ${
+            error ? "border-red-500/60" : "border-zinc-700"
+          }`}
+        />
+        <button
+          onClick={submit}
+          className="mt-4 w-full rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-3 text-sm font-medium text-zinc-950 transition-colors hover:bg-white"
+        >
+          Enter
+        </button>
+      </div>
+    </div>
+  );
+}
+
 type TabId = "a" | "b";
 
 const TABS: { id: TabId; kicker: string; label: string }[] = [
@@ -125,9 +175,18 @@ const TABS: { id: TabId; kicker: string; label: string }[] = [
 ];
 
 export default function DemoPage() {
+  const [unlocked, setUnlocked] = useState<boolean | null>(null);
   const [tab, setTab] = useState<TabId>("a");
   const [exitM, setExitM] = useState(50); // $M
   const [domainM, setDomainM] = useState(7.5); // $M
+
+  useEffect(() => {
+    try {
+      setUnlocked(sessionStorage.getItem("demo-access") === "granted");
+    } catch {
+      setUnlocked(false);
+    }
+  }, []);
 
   const exit = exitM * 1_000_000;
   const domain = domainM * 1_000_000;
@@ -141,6 +200,13 @@ export default function DemoPage() {
   const domainTax = domainGain * TAX_RATE;
   const domainNet = domain - DOMAIN_BASIS - domainTax;
   const netB = netA + domainNet;
+
+  if (unlocked === null) {
+    return <div className="h-dvh bg-zinc-950" />;
+  }
+  if (!unlocked) {
+    return <AccessGate onUnlock={() => setUnlocked(true)} />;
+  }
 
   return (
     <div className="flex h-dvh bg-zinc-950 text-zinc-100">
