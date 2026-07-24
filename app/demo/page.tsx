@@ -373,43 +373,50 @@ export default function DemoPage() {
                 <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
                   Exit Economics
                 </h2>
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-10">
-                  <label className="text-[13px] uppercase tracking-wider text-zinc-500">
-                    Enterprise exit value
-                  </label>
-                  <div className="mt-4 flex items-baseline gap-4">
-                    <AnimatedM
-                      value={exit}
-                      decimals={0}
-                      className="font-mono text-6xl font-semibold tabular-nums text-zinc-100"
-                    />
-                    <span className="font-mono text-xl tabular-nums text-zinc-400">
-                      {(exit / ARR).toFixed(1)}× ARR
-                    </span>
-                  </div>
-                  <Slider
-                    className="mt-10 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
-                    min={30}
-                    max={75}
-                    step={1}
-                    value={[exitM]}
-                    onValueChange={([v]) => setExitM(v)}
-                  />
-                  <div className="relative mt-3 h-5">
-                    {[3, 4, 5].map((m) => {
-                      const valM = (m * ARR) / 1_000_000;
-                      const pct = ((valM - 30) / (75 - 30)) * 100;
-                      return (
-                        <button
-                          key={m}
-                          onClick={() => setExitM(Math.round(valM))}
-                          className="absolute -translate-x-1/2 font-mono text-[11px] tabular-nums text-zinc-600 transition-colors hover:text-zinc-300"
-                          style={{ left: `${pct}%` }}
-                        >
-                          {m}×
-                        </button>
-                      );
-                    })}
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-20">
+                  <div className="flex items-center gap-20">
+                    <div className="flex-1">
+                      <label className="text-[13px] uppercase tracking-wider text-zinc-500">
+                        Exit multiple
+                      </label>
+                      <Slider
+                        className="mt-8 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
+                        min={30}
+                        max={75}
+                        step={1}
+                        value={[exitM]}
+                        onValueChange={([v]) => setExitM(v)}
+                      />
+                      <div className="relative mt-4 h-6">
+                        {[3, 4, 5].map((m) => {
+                          const valM = (m * ARR) / 1_000_000;
+                          const pct = ((valM - 30) / (75 - 30)) * 100;
+                          return (
+                            <button
+                              key={m}
+                              onClick={() => setExitM(Math.round(valM))}
+                              className="absolute -translate-x-1/2 font-mono text-sm tabular-nums text-zinc-600 transition-colors hover:text-zinc-300"
+                              style={{ left: `${pct}%` }}
+                            >
+                              {m}×
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-[13px] uppercase tracking-wider text-zinc-500">
+                        Enterprise exit value
+                      </p>
+                      <AnimatedM
+                        value={exit}
+                        decimals={0}
+                        className="mt-3 block font-mono text-7xl font-semibold tabular-nums text-zinc-100"
+                      />
+                      <p className="mt-3 font-mono text-xl tabular-nums text-zinc-400">
+                        {(exit / ARR).toFixed(1)}× ARR
+                      </p>
+                    </div>
                   </div>
                 </div>
 
