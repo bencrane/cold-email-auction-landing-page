@@ -1616,24 +1616,26 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
       <h3 className="mt-10 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
         Deal Value Allocation
       </h3>
-      <div className="mt-3 grid grid-cols-2 items-stretch gap-6">
+      <div className="mt-3 grid grid-cols-2 items-start gap-6">
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6">
           <AllocationCell exit={exit} domainValue={0} opcoValue={exit} />
         </div>
-        <div className="rounded-xl border border-emerald-500/20 bg-zinc-900/40 p-6">
-          <AllocationCell
-            exit={exit}
-            domainValue={domainValue}
-            opcoValue={opcoValue}
-          />
+        <div>
+          <div className="rounded-xl border border-emerald-500/20 bg-zinc-900/40 p-6">
+            <AllocationCell
+              exit={exit}
+              domainValue={domainValue}
+              opcoValue={opcoValue}
+            />
+          </div>
+          {/* Scoped to this column — the assumption is Scenario B's alone */}
+          <p className="mt-3 font-mono text-[11px] leading-relaxed text-zinc-600">
+            Assumption — Scenario B ascribes{" "}
+            {Math.round(DOMAIN_DEAL_SHARE * 100)}% of deal value to DomainCo
+            LLC. Held flat here so the comparison turns on the exit value alone.
+          </p>
         </div>
       </div>
-      <p className="mt-3 font-mono text-[11px] leading-relaxed text-zinc-600">
-        Assumption — Scenario B ascribes{" "}
-        {Math.round(DOMAIN_DEAL_SHARE * 100)}% of deal value to DomainCo LLC.
-        Held flat here so the comparison turns on the exit value alone; the
-        Scenario B tab derives its allocation from the licensing model instead.
-      </p>
 
       {/* Tax Treatment */}
       <h3 className="mt-10 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
