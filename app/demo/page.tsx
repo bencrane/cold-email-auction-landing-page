@@ -379,6 +379,33 @@ export default function DemoPage() {
                   </div>
                 </div>
 
+                {/* Tax Treatment */}
+                <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
+                  Tax Treatment
+                </h2>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-8">
+                  <LedgerRow
+                    label="Enterprise exit value"
+                    value={fmtM(exit, 0)}
+                  />
+                  <LedgerRow
+                    label="Federal · LTCG 20% + NIIT 3.8%"
+                    value={`−${fmtM(taxA)}`}
+                    negative
+                  />
+                  <LedgerRow label="State · Texas 0%" value="−$0" muted />
+                  <div className="flex items-baseline justify-between pt-4">
+                    <span className="text-[13px] uppercase tracking-wider text-zinc-500">
+                      Total tax burden
+                    </span>
+                    <AnimatedM
+                      value={taxA}
+                      prefix="−"
+                      className="font-mono text-2xl font-semibold tabular-nums text-red-400/90"
+                    />
+                  </div>
+                </div>
+
                 {/* Post-Tax Proceeds */}
                 <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Post-Tax Proceeds
@@ -389,7 +416,7 @@ export default function DemoPage() {
                       <Pie
                         data={[
                           { name: "Net proceeds", value: netA },
-                          { name: "Federal tax", value: taxA },
+                          { name: "Tax burden", value: taxA },
                         ]}
                         dataKey="value"
                         cx="50%"
