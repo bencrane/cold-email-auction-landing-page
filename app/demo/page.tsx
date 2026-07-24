@@ -212,7 +212,7 @@ const TABS: { id: TabId; kicker: string; label: string }[] = [
 export default function DemoPage() {
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
   const [tab, setTab] = useState<TabId>("a");
-  const [exitM, setExitM] = useState(50); // $M
+  const [exitMult, setExitMult] = useState(4); // whole-number ARR multiple
   const [domainM, setDomainM] = useState(7.5); // $M
 
   useEffect(() => {
@@ -223,7 +223,7 @@ export default function DemoPage() {
     }
   }, []);
 
-  const exit = exitM * 1_000_000;
+  const exit = exitMult * ARR;
   const domain = domainM * 1_000_000;
 
   // Scenario A
@@ -373,50 +373,47 @@ export default function DemoPage() {
                 <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
                   Exit Economics
                 </h2>
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-20">
-                  <div className="flex items-center gap-20">
-                    <div className="flex-1">
-                      <label className="text-[13px] uppercase tracking-wider text-zinc-500">
-                        Exit multiple
-                      </label>
-                      <div className="mt-8 flex items-stretch gap-8">
-                        <Slider
-                          orientation="vertical"
-                          className="h-64 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
-                          min={30}
-                          max={75}
-                          step={1}
-                          value={[exitM]}
-                          onValueChange={([v]) => setExitM(v)}
-                        />
-                        <div className="relative h-64 w-12">
-                          {[3, 4, 5].map((m) => {
-                            const valM = (m * ARR) / 1_000_000;
-                            const pct = ((valM - 30) / (75 - 30)) * 100;
-                            return (
-                              <button
-                                key={m}
-                                onClick={() => setExitM(Math.round(valM))}
-                                className="absolute left-0 translate-y-1/2 font-mono text-sm tabular-nums text-zinc-600 transition-colors hover:text-zinc-300"
-                                style={{ bottom: `${pct}%` }}
-                              >
-                                {m}×
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-14">
+                  <div className="mx-auto max-w-2xl">
+                    <p className="text-center text-[13px] uppercase tracking-wider text-zinc-500">
+                      Enterprise exit value
+                    </p>
+                    <AnimatedM
+                      value={exit}
+                      decimals={0}
+                      className="mt-2 block text-center font-mono text-7xl font-semibold tabular-nums text-zinc-100"
+                    />
+                    <Slider
+                      className="mt-12 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
+                      min={2}
+                      max={9}
+                      step={1}
+                      value={[exitMult]}
+                      onValueChange={([v]) => setExitMult(v)}
+                    />
+                    <div className="relative mt-4 h-6">
+                      {[2, 3, 4, 5, 6, 7, 8, 9].map((m) => {
+                        const pct = ((m - 2) / (9 - 2)) * 100;
+                        const active = m === exitMult;
+                        return (
+                          <button
+                            key={m}
+                            onClick={() => setExitMult(m)}
+                            className={`absolute -translate-x-1/2 font-mono text-sm tabular-nums transition-colors ${
+                              active
+                                ? "text-zinc-100"
+                                : "text-zinc-600 hover:text-zinc-300"
+                            }`}
+                            style={{ left: `${pct}%` }}
+                          >
+                            {m}×
+                          </button>
+                        );
+                      })}
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-[13px] uppercase tracking-wider text-zinc-500">
-                        Enterprise exit value
-                      </p>
-                      <AnimatedM
-                        value={exit}
-                        decimals={0}
-                        className="mt-3 block font-mono text-7xl font-semibold tabular-nums text-zinc-100"
-                      />
-                    </div>
+                    <p className="mt-6 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
+                      Exit multiple · ARR $13.2M
+                    </p>
                   </div>
                 </div>
 
