@@ -118,32 +118,31 @@ function SliderBlock({
   );
 }
 
-// Recharts pie label: name above amount, anchored outside the slice
+// Recharts pie label: name + amount rendered inside the slice
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function renderProceedsLabel(props: any) {
   const { cx, cy, midAngle, outerRadius, name, value, index } = props;
   const RADIAN = Math.PI / 180;
-  const r = outerRadius + 36;
+  const r = outerRadius * (index === 0 ? 0.55 : 0.72);
   const x = cx + r * Math.cos(-midAngle * RADIAN);
   const y = cy + r * Math.sin(-midAngle * RADIAN);
-  const anchor = x > cx ? "start" : "end";
-  const color = index === 0 ? "#34d399" : "#f87171";
+  const ink = index === 0 ? "#022c22" : "#450a0a";
   return (
-    <text textAnchor={anchor} fill={color}>
+    <text textAnchor="middle" fill={ink}>
       <tspan
         x={x}
-        y={y - 10}
-        fill="#a1a1aa"
+        y={y - 12}
         fontSize={15}
+        fontWeight={500}
         fontFamily="var(--font-inter)"
       >
         {name}
       </tspan>
       <tspan
         x={x}
-        y={y + 16}
-        fontSize={20}
-        fontWeight={600}
+        y={y + 14}
+        fontSize={22}
+        fontWeight={700}
         fontFamily="var(--font-geist-mono)"
       >
         {`${index === 1 ? "−" : ""}$${(value / 1_000_000).toFixed(1)}M`}
@@ -303,54 +302,8 @@ export default function DemoPage() {
                   </div>
                 </div>
 
-                {/* Entity Structure */}
-                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
-                  Entity Structure
-                </h2>
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
-                  <div className="flex flex-col items-center">
-                    {/* Master HoldCo */}
-                    <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-14 py-7 text-center">
-                      <p className="text-xl font-medium text-zinc-100">
-                        Master HoldCo.
-                      </p>
-                      <p className="mt-1 font-mono text-sm text-zinc-500">
-                        S-Corp · Texas
-                      </p>
-                    </div>
-
-                    {/* Connectors */}
-                    <div className="relative h-14 w-full max-w-[640px]">
-                      <div className="absolute left-1/2 top-0 h-7 w-px bg-zinc-700" />
-                      <div className="absolute top-7 left-[25%] right-[25%] h-px bg-zinc-700" />
-                      <div className="absolute left-[25%] top-7 h-7 w-px bg-zinc-700" />
-                      <div className="absolute left-[75%] top-7 h-7 w-px bg-zinc-700" />
-                    </div>
-
-                    {/* Subsidiaries */}
-                    <div className="grid w-full max-w-[640px] grid-cols-2 gap-10">
-                      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-7 text-center">
-                        <p className="text-xl font-medium text-zinc-100">
-                          Leadbird LLC
-                        </p>
-                        <p className="mt-1 font-mono text-sm text-zinc-500">
-                          100%
-                        </p>
-                      </div>
-                      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-7 text-center">
-                        <p className="text-xl font-medium text-zinc-100">
-                          Cleverly LLC
-                        </p>
-                        <p className="mt-1 font-mono text-sm text-zinc-500">
-                          % stake
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Company Economics */}
-                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Company Economics
                 </h2>
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
@@ -366,11 +319,8 @@ export default function DemoPage() {
                   </div>
                 </div>
 
-                {/* Divider */}
-                <div className="mt-10 h-px bg-zinc-800" />
-
                 {/* Exit Economics */}
-                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Exit Economics
                 </h2>
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-14">
@@ -418,7 +368,7 @@ export default function DemoPage() {
                 </div>
 
                 {/* Post-Tax Proceeds */}
-                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Post-Tax Proceeds
                 </h2>
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-10">
@@ -432,28 +382,64 @@ export default function DemoPage() {
                         dataKey="value"
                         cx="50%"
                         cy="50%"
-                        innerRadius={130}
-                        outerRadius={180}
+                        innerRadius={0}
+                        outerRadius={190}
                         startAngle={90}
                         endAngle={-270}
                         stroke="none"
                         isAnimationActive={false}
-                        labelLine={{ stroke: "#52525b", strokeWidth: 1 }}
+                        labelLine={false}
                         label={renderProceedsLabel}
                       >
                         <Cell fill="#34d399" />
                         <Cell fill="#f87171" />
                       </Pie>
                     </PieChart>
-                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                      <AnimatedM
-                        value={exit}
-                        decimals={0}
-                        className="font-mono text-5xl font-semibold tabular-nums text-zinc-100"
-                      />
-                      <span className="mt-2 font-mono text-sm uppercase tracking-[0.2em] text-zinc-500">
-                        Exit value
-                      </span>
+                  </div>
+                </div>
+
+                {/* Entity Structure */}
+                <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
+                  Entity Structure
+                </h2>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
+                  <div className="flex flex-col items-center">
+                    {/* Master HoldCo */}
+                    <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-14 py-7 text-center">
+                      <p className="text-xl font-medium text-zinc-100">
+                        Master HoldCo.
+                      </p>
+                      <p className="mt-1 font-mono text-sm text-zinc-500">
+                        S-Corp · Texas
+                      </p>
+                    </div>
+
+                    {/* Connectors */}
+                    <div className="relative h-14 w-full max-w-[640px]">
+                      <div className="absolute left-1/2 top-0 h-7 w-px bg-zinc-700" />
+                      <div className="absolute top-7 left-[25%] right-[25%] h-px bg-zinc-700" />
+                      <div className="absolute left-[25%] top-7 h-7 w-px bg-zinc-700" />
+                      <div className="absolute left-[75%] top-7 h-7 w-px bg-zinc-700" />
+                    </div>
+
+                    {/* Subsidiaries */}
+                    <div className="grid w-full max-w-[640px] grid-cols-2 gap-10">
+                      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-7 text-center">
+                        <p className="text-xl font-medium text-zinc-100">
+                          Leadbird LLC
+                        </p>
+                        <p className="mt-1 font-mono text-sm text-zinc-500">
+                          100%
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-7 text-center">
+                        <p className="text-xl font-medium text-zinc-100">
+                          Cleverly LLC
+                        </p>
+                        <p className="mt-1 font-mono text-sm text-zinc-500">
+                          % stake
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
