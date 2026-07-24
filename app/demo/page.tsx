@@ -8,7 +8,7 @@ import {
   useTransform,
   MotionValue,
 } from "framer-motion";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 import { Slider } from "@/components/ui/slider";
 import { Building2, Globe, TrendingUp } from "lucide-react";
 
@@ -418,31 +418,29 @@ export default function DemoPage() {
                   Post-Tax Proceeds
                 </h2>
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-10">
-                  <div className="relative h-[340px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={[
-                            { name: "Net proceeds", value: netA },
-                            { name: "Federal tax", value: taxA },
-                          ]}
-                          dataKey="value"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={92}
-                          outerRadius={124}
-                          startAngle={90}
-                          endAngle={-270}
-                          stroke="none"
-                          isAnimationActive={false}
-                          labelLine={{ stroke: "#52525b", strokeWidth: 1 }}
-                          label={renderProceedsLabel}
-                        >
-                          <Cell fill="#34d399" />
-                          <Cell fill="#f87171" />
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
+                  <div className="relative mx-auto h-[360px] w-[640px] max-w-full">
+                    <PieChart width={640} height={360}>
+                      <Pie
+                        data={[
+                          { name: "Net proceeds", value: netA },
+                          { name: "Federal tax", value: taxA },
+                        ]}
+                        dataKey="value"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={95}
+                        outerRadius={130}
+                        startAngle={90}
+                        endAngle={-270}
+                        stroke="none"
+                        isAnimationActive={false}
+                        labelLine={{ stroke: "#52525b", strokeWidth: 1 }}
+                        label={renderProceedsLabel}
+                      >
+                        <Cell fill="#34d399" />
+                        <Cell fill="#f87171" />
+                      </Pie>
+                    </PieChart>
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
                       <AnimatedM
                         value={exit}
