@@ -22,7 +22,10 @@ const ORDINARY_RATE = 0.37; // OperatingGroup exit allocation + all distribution
 
 // Comparison tab: share of deal value ascribed to DomainCo. A stated planning
 // assumption, not derived from the licensing model — disclosed on the page.
-const DOMAIN_DEAL_SHARE = 0.25;
+const DOMAIN_DEAL_SHARE = 0.2304;
+
+// The arbitrage is the ordinary/LTCG spread applied to whatever the IP carries.
+const ARBITRAGE_SPREAD = ORDINARY_RATE - DOMAIN_GAINS_RATE; // 0.17
 
 // Unit of account for the "why this matters" reveal. Gallardo at its original
 // MSRP — out of production since 2013, chosen deliberately.
@@ -644,8 +647,8 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
 // The four sliders that drive the New scenario. Held by DemoPage so the New and
 // Comparison tabs read exactly the same model.
 type NewControls = {
-  exitMult: number;
-  setExitMult: (v: number) => void;
+  exitValue: number;
+  setExitValue: (v: number) => void;
   margin: number;
   setMargin: (v: number) => void;
   royaltyRate: number;
@@ -667,7 +670,7 @@ function deriveNewModel(c: NewControls) {
   const grossDist = operatingProfit * (c.distRate / 100);
   const distTax = grossDist * ORDINARY_RATE;
 
-  const exit = c.exitMult * ARR;
+  const exit = c.exitValue;
 
   // DomainCo's slice of the deal is its gross income capitalized at a multiple.
   // Capped at the exit value — the two allocations must sum to the deal, not exceed it.
@@ -706,8 +709,8 @@ function deriveNewModel(c: NewControls) {
 
 function NewScenario({ controls }: { controls: NewControls }) {
   const {
-    exitMult,
-    setExitMult,
+    exitValue,
+    setExitValue,
     margin,
     setMargin,
     royaltyRate,
@@ -1355,34 +1358,30 @@ function NewScenario({ controls }: { controls: NewControls }) {
           />
           <Slider
             className="mt-12 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
-            min={2}
-            max={9}
-            step={0.1}
-            value={[exitMult]}
-            onValueChange={([v]) => setExitMult(v)}
+            min={10_000_000}
+            max={200_000_000}
+            step={5_000_000}
+            value={[exitValue]}
+            onValueChange={([v]) => setExitValue(v)}
           />
           <div className="relative mt-4 h-6">
-            {[2, 3, 4, 5, 6, 7, 8, 9].map((m) => {
-              const pct = ((m - 2) / (9 - 2)) * 100;
-              const active = m === exitMult;
-              return (
-                <button
-                  key={m}
-                  onClick={() => setExitMult(m)}
-                  className={`absolute -translate-x-1/2 font-mono text-sm tabular-nums transition-colors ${
-                    active
-                      ? "text-zinc-100"
-                      : "text-zinc-600 hover:text-zinc-300"
-                  }`}
-                  style={{ left: `${pct}%` }}
-                >
-                  {m}×
-                </button>
-              );
-            })}
+            {[10, 50, 100, 150, 200].map((m) => (
+              <button
+                key={m}
+                onClick={() => setExitValue(m * 1_000_000)}
+                className={`absolute -translate-x-1/2 font-mono text-sm tabular-nums transition-colors ${
+                  m * 1_000_000 === exitValue
+                    ? "text-zinc-100"
+                    : "text-zinc-600 hover:text-zinc-300"
+                }`}
+                style={{ left: `${((m - 10) / 190) * 100}%` }}
+              >
+                ${m}M
+              </button>
+            ))}
           </div>
           <p className="mt-6 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
-            Exit multiple · ARR $13.2M
+            Set independently of ARR
           </p>
         </div>
       </div>
@@ -1632,6 +1631,8 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
   const domainTax = domainValue * DOMAIN_GAINS_RATE;
   const opcoTax = opcoValue * ORDINARY_RATE;
   const tax = domainTax + opcoTax;
+  // Identical to cmpTaxA - tax; stated directly so the 17% spread is explicit.
+  const arbitrage = domainValue * ARBITRAGE_SPREAD;
 
   const [showWhy, setShowWhy] = useState(false);
   const lambosA = Math.floor((exit - cmpTaxA) / LAMBO_PRICE);
@@ -1667,30 +1668,30 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
           />
           <Slider
             className="mt-10 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
-            min={2}
-            max={9}
-            step={0.1}
-            value={[controls.exitMult]}
-            onValueChange={([v]) => controls.setExitMult(v)}
+            min={10_000_000}
+            max={200_000_000}
+            step={5_000_000}
+            value={[controls.exitValue]}
+            onValueChange={([v]) => controls.setExitValue(v)}
           />
           <div className="relative mt-4 h-6">
-            {[2, 3, 4, 5, 6, 7, 8, 9].map((m) => (
+            {[10, 50, 100, 150, 200].map((m) => (
               <button
                 key={m}
-                onClick={() => controls.setExitMult(m)}
+                onClick={() => controls.setExitValue(m * 1_000_000)}
                 className={`absolute -translate-x-1/2 font-mono text-sm tabular-nums transition-colors ${
-                  m === controls.exitMult
+                  m * 1_000_000 === controls.exitValue
                     ? "text-zinc-100"
                     : "text-zinc-600 hover:text-zinc-300"
                 }`}
-                style={{ left: `${((m - 2) / (9 - 2)) * 100}%` }}
+                style={{ left: `${((m - 10) / 190) * 100}%` }}
               >
-                {m}×
+                ${m}M
               </button>
             ))}
           </div>
           <p className="mt-6 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
-            Exit multiple · ARR $13.2M
+            Set independently of ARR
           </p>
         </div>
       </div>
@@ -1738,8 +1739,9 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
           {/* Scoped to this column — the assumption is Scenario B's alone */}
           <p className="mt-3 font-mono text-[11px] leading-relaxed text-zinc-600">
             Assumption — Scenario B ascribes{" "}
-            {Math.round(DOMAIN_DEAL_SHARE * 100)}% of deal value to DomainCo
-            LLC. Held flat here so the comparison turns on the exit value alone.
+            {(DOMAIN_DEAL_SHARE * 100).toFixed(2)}% of deal value to DomainCo
+            LLC ({fmtDollars(domainValue)}). Held flat here so the comparison
+            turns on the exit value alone.
           </p>
         </div>
       </div>
@@ -1792,11 +1794,9 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
             Additional proceeds kept after tax
           </p>
         </div>
-        <AnimatedM
-          value={cmpTaxA - tax}
-          prefix="+"
-          className="shrink-0 font-mono text-5xl font-semibold tabular-nums text-emerald-400"
-        />
+        <span className="shrink-0 font-mono text-5xl font-semibold tabular-nums text-emerald-400">
+          +{fmtDollars(arbitrage)}
+        </span>
       </div>
 
       <p className="mt-6 font-mono text-[11px] leading-relaxed text-zinc-600">
@@ -1905,22 +1905,22 @@ const TABS: { id: TabId; kicker?: string; label: string }[] = [
 
 export default function DemoPage() {
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<TabId>("a");
-  const [exitMult, setExitMult] = useState(4); // whole-number ARR multiple
+  const [tab, setTab] = useState<TabId>("cmp");
+  const [exitMult, setExitMult] = useState(3.8); // ARR multiple — ~$50M baseline
   const [domainM, setDomainM] = useState(7.5); // $M
   const [marginA, setMarginA] = useState(60); // Scenario A operating margin %
   const [distA, setDistA] = useState(50); // Scenario A distribution %
 
   // New-scenario model — held here so the New and Comparison tabs stay in sync.
-  const [nExitMult, setNExitMult] = useState(4);
+  const [nExitValue, setNExitValue] = useState(50_000_000);
   const [nMargin, setNMargin] = useState(60);
   const [nRoyaltyRate, setNRoyaltyRate] = useState(8);
   const [nDomainMult, setNDomainMult] = useState(8);
   const [nDistRate, setNDistRate] = useState(50);
   const [nMediaAvoided, setNMediaAvoided] = useState(600_000);
   const newControls: NewControls = {
-    exitMult: nExitMult,
-    setExitMult: setNExitMult,
+    exitValue: nExitValue,
+    setExitValue: setNExitValue,
     margin: nMargin,
     setMargin: setNMargin,
     royaltyRate: nRoyaltyRate,
