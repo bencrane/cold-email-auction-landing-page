@@ -1905,14 +1905,14 @@ const TABS: { id: TabId; kicker?: string; label: string }[] = [
 
 export default function DemoPage() {
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<TabId>("a");
-  const [exitMult, setExitMult] = useState(4); // whole-number ARR multiple
+  const [tab, setTab] = useState<TabId>("cmp");
+  const [exitMult, setExitMult] = useState(3.8); // ARR multiple — ~$50M baseline
   const [domainM, setDomainM] = useState(7.5); // $M
   const [marginA, setMarginA] = useState(60); // Scenario A operating margin %
   const [distA, setDistA] = useState(50); // Scenario A distribution %
 
   // New-scenario model — held here so the New and Comparison tabs stay in sync.
-  const [nExitMult, setNExitMult] = useState(4);
+  const [nExitMult, setNExitMult] = useState(3.8);
   const [nMargin, setNMargin] = useState(60);
   const [nRoyaltyRate, setNRoyaltyRate] = useState(8);
   const [nDomainMult, setNDomainMult] = useState(8);
