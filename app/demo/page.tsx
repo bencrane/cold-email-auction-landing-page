@@ -103,7 +103,7 @@ function SliderBlock({
         </span>
       </div>
       <Slider
-        className="mt-4"
+        className="mt-4 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
         min={min}
         max={max}
         step={step}
@@ -388,7 +388,7 @@ export default function DemoPage() {
                     </span>
                   </div>
                   <Slider
-                    className="mt-10"
+                    className="mt-10 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
                     min={30}
                     max={75}
                     step={1}
