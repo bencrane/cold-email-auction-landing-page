@@ -20,6 +20,10 @@ const ARR = 13_200_000;
 const DOMAIN_GAINS_RATE = 0.2; // DomainCo exit allocation — long-term capital gains
 const ORDINARY_RATE = 0.37; // OperatingGroup exit allocation + all distributions
 
+// Comparison tab: share of deal value ascribed to DomainCo. A stated planning
+// assumption, not derived from the licensing model — disclosed on the page.
+const DOMAIN_DEAL_SHARE = 0.25;
+
 function fmtM(v: number, decimals = 1) {
   return `$${(v / 1_000_000).toFixed(decimals)}M`;
 }
@@ -724,13 +728,6 @@ function NewScenario({ controls }: { controls: NewControls }) {
 
   return (
     <>
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900">
-          <Building2 className="h-4 w-4 text-zinc-400" />
-        </div>
-        <h1 className="text-xl font-medium text-zinc-200">Scenario B</h1>
-      </div>
-
       {/* Company Economics */}
       <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
         Company Economics
@@ -1209,6 +1206,48 @@ function NewScenario({ controls }: { controls: NewControls }) {
         </p>
       </div>
 
+      {/* Deliberately muted — emerald means "gain" everywhere else on this page,
+          and the point of this card is that there is nothing to gain here. */}
+      <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/20 px-14 py-12">
+        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+          No change
+        </p>
+        <p className="mt-2 text-2xl text-zinc-300">
+          Annual distributions are identical to Scenario A
+        </p>
+
+        <div className="mt-8">
+          <CompareRow
+            size="lg"
+            label="Scenario A · single stream, no DomainCo"
+            value={fmtDollars(grossDist - distTax)}
+          />
+          <CompareRow
+            size="lg"
+            label="Scenario B · OperatingGroup + DomainCo"
+            value={fmtDollars(grossDist - distTax)}
+          />
+          <div className="mt-8 flex items-baseline justify-between">
+            <span className="text-lg uppercase tracking-wider text-zinc-400">
+              Difference
+            </span>
+            <span className="font-mono text-4xl font-semibold tabular-nums text-zinc-500">
+              $0
+            </span>
+          </div>
+        </div>
+
+        <p className="mt-8 font-mono text-[11px] leading-relaxed text-zinc-600">
+          Not a coincidence, and not the point. The licensing fee moves profit
+          between two entities the owner holds 100% of, and both streams are
+          ordinary income at the member level — so the totals cannot diverge no
+          matter how the margin, royalty rate or distribution % are set. The
+          structure is not built to change what he takes home each year. It
+          changes what happens at exit, where a share of the deal is taxed at
+          capital gains instead of ordinary. That starts below.
+        </p>
+      </div>
+
       {/* Master HoldCo Economics */}
       <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
         Master HoldCo. Economics
@@ -1482,19 +1521,19 @@ function NewScenario({ controls }: { controls: NewControls }) {
 }
 
 function ComparisonScenario({ controls }: { controls: NewControls }) {
-  const { exit, domainValue, opcoValue, domainTax, opcoTax, tax, cmpTaxA } =
-    deriveNewModel(controls);
+  const { exit, cmpTaxA } = deriveNewModel(controls);
+
+  // The comparison runs off a stated assumption rather than the Scenario B
+  // tab's licensing build-up, so the headline turns on one lever: the exit.
+  const domainValue = exit * DOMAIN_DEAL_SHARE;
+  const opcoValue = exit - domainValue;
+  const domainTax = domainValue * DOMAIN_GAINS_RATE;
+  const opcoTax = opcoValue * ORDINARY_RATE;
+  const tax = domainTax + opcoTax;
 
   return (
     <>
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900">
-          <Scale className="h-4 w-4 text-zinc-400" />
-        </div>
-        <h1 className="text-xl font-medium text-zinc-200">Comparison</h1>
-      </div>
-
-      <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
+      <h2 className="mt-2 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
         Scenario Comparison
       </h2>
       <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
@@ -1512,14 +1551,46 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
       <h3 className="mt-10 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
         Enterprise Exit Value
       </h3>
-      <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-900/40 px-6 py-10">
-        <span className="block text-center font-mono text-6xl font-semibold tabular-nums text-zinc-100">
-          {fmtM(exit, 0)}
-        </span>
-        <p className="mt-3 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
-          {controls.exitMult}× ARR $13.2M
-        </p>
+      <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-12">
+        <div className="mx-auto max-w-2xl">
+          <AnimatedM
+            value={exit}
+            decimals={0}
+            className="block text-center font-mono text-6xl font-semibold tabular-nums text-zinc-100"
+          />
+          <Slider
+            className="mt-10 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
+            min={2}
+            max={9}
+            step={0.1}
+            value={[controls.exitMult]}
+            onValueChange={([v]) => controls.setExitMult(v)}
+          />
+          <div className="relative mt-4 h-6">
+            {[2, 3, 4, 5, 6, 7, 8, 9].map((m) => (
+              <button
+                key={m}
+                onClick={() => controls.setExitMult(m)}
+                className={`absolute -translate-x-1/2 font-mono text-sm tabular-nums transition-colors ${
+                  m === controls.exitMult
+                    ? "text-zinc-100"
+                    : "text-zinc-600 hover:text-zinc-300"
+                }`}
+                style={{ left: `${((m - 2) / (9 - 2)) * 100}%` }}
+              >
+                {m}×
+              </button>
+            ))}
+          </div>
+          <p className="mt-6 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-600">
+            Exit multiple · ARR $13.2M
+          </p>
+        </div>
       </div>
+      <p className="mt-3 font-mono text-[11px] leading-relaxed text-zinc-600">
+        Everything below flows from this exit value. The slider is shared with
+        the Scenario B tab.
+      </p>
 
       {/* Column headers — everything below this point differs by scenario */}
       <div className="mt-12 grid grid-cols-2 gap-6">
@@ -1557,6 +1628,12 @@ function ComparisonScenario({ controls }: { controls: NewControls }) {
           />
         </div>
       </div>
+      <p className="mt-3 font-mono text-[11px] leading-relaxed text-zinc-600">
+        Assumption — Scenario B ascribes{" "}
+        {Math.round(DOMAIN_DEAL_SHARE * 100)}% of deal value to DomainCo LLC.
+        Held flat here so the comparison turns on the exit value alone; the
+        Scenario B tab derives its allocation from the licensing model instead.
+      </p>
 
       {/* Tax Treatment */}
       <h3 className="mt-10 font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
@@ -1734,7 +1811,31 @@ export default function DemoPage() {
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-5xl px-8 pt-16 pb-40">
+        {/* Pinned tab header — a direct child of the scrolling element, so it
+            stays put while the panel below scrolls under it. */}
+        <div className="sticky top-0 z-20 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur">
+          <div className="mx-auto flex max-w-5xl items-center gap-3 px-8 py-5">
+            <div
+              className={`flex h-9 w-9 items-center justify-center rounded-lg border ${
+                tab === "b"
+                  ? "border-emerald-500/40 bg-emerald-500/10"
+                  : "border-zinc-700 bg-zinc-900"
+              }`}
+            >
+              {tab === "cmp" ? (
+                <Scale className="h-4 w-4 text-zinc-400" />
+              ) : tab === "b" ? (
+                <Globe className="h-4 w-4 text-emerald-400" />
+              ) : (
+                <Building2 className="h-4 w-4 text-zinc-400" />
+              )}
+            </div>
+            <h1 className="text-xl font-medium text-zinc-200">
+              {TABS.find((t) => t.id === tab)?.label}
+            </h1>
+          </div>
+        </div>
+        <div className="mx-auto max-w-5xl px-8 pt-12 pb-40">
           <AnimatePresence mode="wait">
             {tab === "a" ? (
               <motion.div
@@ -1744,15 +1845,6 @@ export default function DemoPage() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900">
-                    <Building2 className="h-4 w-4 text-zinc-400" />
-                  </div>
-                  <h1 className="text-xl font-medium text-zinc-200">
-                    Scenario A
-                  </h1>
-                </div>
-
                 {/* Company Economics */}
                 <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Company Economics
@@ -2053,20 +2145,7 @@ export default function DemoPage() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-500/40 bg-emerald-500/10">
-                      <Globe className="h-4 w-4 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
-                        Scenario B
-                      </p>
-                      <h1 className="text-xl font-medium text-zinc-200">
-                        OpCo + DomainCo
-                      </h1>
-                    </div>
-                  </div>
+                <div className="flex justify-end">
                   <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1">
                     <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
                     <AnimatedM
@@ -2077,7 +2156,7 @@ export default function DemoPage() {
                   </div>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-6">
                   <SliderBlock
                     label="ColdEmail.com asset value"
                     display={fmtM(domain)}
