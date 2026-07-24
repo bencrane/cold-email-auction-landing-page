@@ -118,36 +118,48 @@ function SliderBlock({
   );
 }
 
-// Recharts pie label: name + amount rendered inside the slice
+// Recharts pie label: big amount inside the slice, name outside the pie
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function renderProceedsLabel(props: any) {
   const { cx, cy, midAngle, outerRadius, name, value, index } = props;
   const RADIAN = Math.PI / 180;
-  const r = outerRadius * (index === 0 ? 0.55 : 0.72);
-  const x = cx + r * Math.cos(-midAngle * RADIAN);
-  const y = cy + r * Math.sin(-midAngle * RADIAN);
+  const cos = Math.cos(-midAngle * RADIAN);
+  const sin = Math.sin(-midAngle * RADIAN);
+  const rIn = outerRadius * (index === 0 ? 0.55 : 0.68);
+  const xIn = cx + rIn * cos;
+  const yIn = cy + rIn * sin;
+  const rOut = outerRadius + 34;
+  const xOut = cx + rOut * cos;
+  const yOut = cy + rOut * sin;
   const ink = index === 0 ? "#022c22" : "#450a0a";
+  const accent = index === 0 ? "#34d399" : "#f87171";
   return (
-    <text textAnchor="middle" fill={ink}>
-      <tspan
-        x={x}
-        y={y - 12}
-        fontSize={15}
-        fontWeight={500}
-        fontFamily="var(--font-inter)"
-      >
-        {name}
-      </tspan>
-      <tspan
-        x={x}
-        y={y + 14}
-        fontSize={22}
+    <g>
+      <text
+        x={xIn}
+        y={yIn}
+        dy={12}
+        textAnchor="middle"
+        fill={ink}
+        fontSize={index === 0 ? 44 : 32}
         fontWeight={700}
         fontFamily="var(--font-geist-mono)"
       >
         {`${index === 1 ? "−" : ""}$${(value / 1_000_000).toFixed(1)}M`}
-      </tspan>
-    </text>
+      </text>
+      <text
+        x={xOut}
+        y={yOut}
+        dy={6}
+        textAnchor={xOut > cx ? "start" : "end"}
+        fill={accent}
+        fontSize={17}
+        fontWeight={500}
+        fontFamily="var(--font-inter)"
+      >
+        {name}
+      </text>
+    </g>
   );
 }
 
@@ -337,7 +349,7 @@ export default function DemoPage() {
                       className="mt-12 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
                       min={2}
                       max={9}
-                      step={1}
+                      step={0.1}
                       value={[exitMult]}
                       onValueChange={([v]) => setExitMult(v)}
                     />
