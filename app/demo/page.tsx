@@ -52,17 +52,17 @@ function LedgerRow({
   muted?: boolean;
 }) {
   return (
-    <div className="flex items-baseline justify-between py-2.5 border-b border-zinc-800/60">
+    <div className="flex items-baseline justify-between py-4 border-b border-zinc-800/60">
       <span
-        className={`text-[13px] tracking-wide ${
-          muted ? "text-zinc-500" : "text-zinc-400"
+        className={`text-lg tracking-wide ${
+          muted ? "text-zinc-500" : "text-zinc-300"
         }`}
       >
         {label}
       </span>
       <span
-        className={`font-mono text-sm tabular-nums ${
-          negative ? "text-red-400/90" : "text-zinc-200"
+        className={`font-mono text-xl tabular-nums ${
+          negative ? "text-red-400/90" : "text-zinc-100"
         }`}
       >
         {value}
@@ -383,25 +383,30 @@ export default function DemoPage() {
                 <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Tax Treatment
                 </h2>
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-8">
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-12">
                   <LedgerRow
                     label="Enterprise exit value"
                     value={fmtM(exit, 0)}
                   />
                   <LedgerRow
-                    label="Federal · LTCG 20% + NIIT 3.8%"
-                    value={`−${fmtM(taxA)}`}
+                    label="Federal · Long-term capital gains 20%"
+                    value={`−${fmtM(exit * 0.2)}`}
+                    negative
+                  />
+                  <LedgerRow
+                    label="Federal · Net investment income tax 3.8%"
+                    value={`−${fmtM(exit * 0.038)}`}
                     negative
                   />
                   <LedgerRow label="State · Texas 0%" value="−$0" muted />
-                  <div className="flex items-baseline justify-between pt-4">
-                    <span className="text-[13px] uppercase tracking-wider text-zinc-500">
+                  <div className="flex items-baseline justify-between pt-8">
+                    <span className="text-lg uppercase tracking-wider text-zinc-400">
                       Total tax burden
                     </span>
                     <AnimatedM
                       value={taxA}
                       prefix="−"
-                      className="font-mono text-2xl font-semibold tabular-nums text-red-400/90"
+                      className="font-mono text-5xl font-semibold tabular-nums text-red-400/90"
                     />
                   </div>
                 </div>
