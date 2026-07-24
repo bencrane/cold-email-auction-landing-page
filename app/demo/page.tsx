@@ -1,0 +1,478 @@
+"use client";
+
+import { useState } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useSpring,
+  useTransform,
+  MotionValue,
+} from "framer-motion";
+import { Slider } from "@/components/ui/slider";
+import { Building2, Globe, TrendingUp } from "lucide-react";
+
+const TAX_RATE = 0.238; // Federal LTCG 20% + NIIT 3.8%
+const DOMAIN_BASIS = 1_000_000;
+
+function fmtM(v: number, decimals = 1) {
+  return `$${(v / 1_000_000).toFixed(decimals)}M`;
+}
+
+function AnimatedM({
+  value,
+  className,
+  prefix = "",
+  decimals = 1,
+}: {
+  value: number;
+  className?: string;
+  prefix?: string;
+  decimals?: number;
+}) {
+  const spring = useSpring(value, { stiffness: 120, damping: 24 });
+  spring.set(value);
+  const text = useTransform(
+    spring as MotionValue<number>,
+    (v) => `${prefix}$${(v / 1_000_000).toFixed(decimals)}M`
+  );
+  return <motion.span className={className}>{text}</motion.span>;
+}
+
+function LedgerRow({
+  label,
+  value,
+  negative = false,
+  muted = false,
+}: {
+  label: string;
+  value: string;
+  negative?: boolean;
+  muted?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline justify-between py-2.5 border-b border-zinc-800/60">
+      <span
+        className={`text-[13px] tracking-wide ${
+          muted ? "text-zinc-500" : "text-zinc-400"
+        }`}
+      >
+        {label}
+      </span>
+      <span
+        className={`font-mono text-sm tabular-nums ${
+          negative ? "text-red-400/90" : "text-zinc-200"
+        }`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function SliderBlock({
+  label,
+  display,
+  min,
+  max,
+  step,
+  value,
+  onChange,
+  minLabel,
+  maxLabel,
+}: {
+  label: string;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  onChange: (v: number) => void;
+  minLabel: string;
+  maxLabel: string;
+}) {
+  return (
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6">
+      <div className="flex items-baseline justify-between">
+        <label className="text-[13px] uppercase tracking-wider text-zinc-500">
+          {label}
+        </label>
+        <span className="font-mono text-lg tabular-nums text-zinc-100">
+          {display}
+        </span>
+      </div>
+      <Slider
+        className="mt-4"
+        min={min}
+        max={max}
+        step={step}
+        value={[value]}
+        onValueChange={([v]) => onChange(v)}
+      />
+      <div className="mt-2 flex justify-between font-mono text-[11px] text-zinc-600">
+        <span>{minLabel}</span>
+        <span>{maxLabel}</span>
+      </div>
+    </div>
+  );
+}
+
+type TabId = "a" | "b";
+
+const TABS: { id: TabId; kicker: string; label: string }[] = [
+  { id: "a", kicker: "Scenario A", label: "Today" },
+  { id: "b", kicker: "Scenario B", label: "OpCo + DomainCo" },
+];
+
+export default function DemoPage() {
+  const [tab, setTab] = useState<TabId>("a");
+  const [exitM, setExitM] = useState(50); // $M
+  const [domainM, setDomainM] = useState(7.5); // $M
+
+  const exit = exitM * 1_000_000;
+  const domain = domainM * 1_000_000;
+
+  // Scenario A
+  const taxA = exit * TAX_RATE;
+  const netA = exit - taxA;
+
+  // Scenario B — identical OpCo sale + DomainCo asset
+  const domainGain = domain - DOMAIN_BASIS;
+  const domainTax = domainGain * TAX_RATE;
+  const domainNet = domain - DOMAIN_BASIS - domainTax;
+  const netB = netA + domainNet;
+
+  return (
+    <div className="flex h-dvh bg-zinc-950 text-zinc-100">
+      {/* Tab rail */}
+      <aside className="flex w-[260px] shrink-0 flex-col border-r border-zinc-800 bg-zinc-900/30">
+        <div className="px-6 pt-8 pb-6">
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+            ColdEmail.com
+          </p>
+        </div>
+        <nav className="flex flex-col gap-1 px-3">
+          {TABS.map((t) => {
+            const active = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`rounded-lg px-4 py-3 text-left transition-colors ${
+                  active
+                    ? "bg-zinc-800/80 text-zinc-100"
+                    : "text-zinc-500 hover:bg-zinc-800/40 hover:text-zinc-300"
+                }`}
+              >
+                <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+                  {t.kicker}
+                </span>
+                <span className="mt-0.5 block text-sm font-medium">
+                  {t.label}
+                </span>
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl px-6 py-14 md:py-16">
+          <AnimatePresence mode="wait">
+            {tab === "a" ? (
+              <motion.div
+                key="a"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900">
+                    <Building2 className="h-4 w-4 text-zinc-400" />
+                  </div>
+                  <div>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                      Scenario A
+                    </p>
+                    <h1 className="text-xl font-medium text-zinc-200">
+                      Today
+                    </h1>
+                  </div>
+                </div>
+
+                {/* Entity Structure */}
+                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                  Entity Structure
+                </h2>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
+                  <div className="flex flex-col items-center">
+                    {/* Master HoldCo */}
+                    <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-8 py-4 text-center">
+                      <p className="text-sm font-medium text-zinc-100">
+                        Master HoldCo.
+                      </p>
+                      <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                        S-Corp · Texas
+                      </p>
+                    </div>
+
+                    {/* Connectors */}
+                    <div className="relative h-10 w-full max-w-[440px]">
+                      <div className="absolute left-1/2 top-0 h-5 w-px bg-zinc-700" />
+                      <div className="absolute top-5 left-[25%] right-[25%] h-px bg-zinc-700" />
+                      <div className="absolute left-[25%] top-5 h-5 w-px bg-zinc-700" />
+                      <div className="absolute left-[75%] top-5 h-5 w-px bg-zinc-700" />
+                    </div>
+
+                    {/* Subsidiaries */}
+                    <div className="grid w-full max-w-[440px] grid-cols-2 gap-6">
+                      <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-center">
+                        <p className="text-sm font-medium text-zinc-100">
+                          Leadbird LLC
+                        </p>
+                        <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                          100%
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-center">
+                        <p className="text-sm font-medium text-zinc-100">
+                          Cleverly LLC
+                        </p>
+                        <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                          % stake
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Company Economics */}
+                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                  Company Economics
+                </h2>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
+                  <div className="flex justify-center py-4">
+                    <div className="flex h-44 w-44 flex-col items-center justify-center rounded-full border border-zinc-700 bg-zinc-900">
+                      <span className="font-mono text-3xl font-semibold tabular-nums text-zinc-100">
+                        $13.2M
+                      </span>
+                      <span className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                        ARR
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="mt-10 h-px bg-zinc-800" />
+
+                {/* Exit Economics */}
+                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                  Exit Economics
+                </h2>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-6">
+                  <div className="flex items-center gap-10">
+                    <div className="flex-1">
+                      <label className="text-[13px] uppercase tracking-wider text-zinc-500">
+                        Enterprise exit value
+                      </label>
+                      <Slider
+                        className="mt-5"
+                        min={30}
+                        max={75}
+                        step={1}
+                        value={[exitM]}
+                        onValueChange={([v]) => setExitM(v)}
+                      />
+                      <div className="mt-2 flex justify-between font-mono text-[11px] text-zinc-600">
+                        <span>$30M</span>
+                        <span>$75M</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <AnimatedM
+                        value={exit}
+                        decimals={0}
+                        className="block font-mono text-5xl font-semibold tabular-nums text-zinc-100"
+                      />
+                      <p className="mt-1.5 font-mono text-sm tabular-nums text-zinc-500">
+                        {(exit / 13_200_000).toFixed(1)}× ARR
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Post-Tax Proceeds */}
+                <h2 className="mt-10 text-[13px] uppercase tracking-wider text-zinc-500">
+                  Post-Tax Proceeds
+                </h2>
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
+                  <LedgerRow
+                    label="OpCo sale proceeds"
+                    value={fmtM(exit, 0)}
+                  />
+                  <LedgerRow
+                    label="Federal tax · LTCG 20% + NIIT 3.8%"
+                    value={`−${fmtM(taxA)}`}
+                    negative
+                  />
+                  <div className="mt-8">
+                    <p className="text-[13px] uppercase tracking-wider text-zinc-500">
+                      Net proceeds
+                    </p>
+                    <AnimatedM
+                      value={netA}
+                      className="mt-1 block font-mono text-4xl md:text-[44px] font-semibold tabular-nums text-zinc-100"
+                    />
+                  </div>
+                </div>
+
+                <p className="mt-6 font-mono text-[11px] leading-relaxed text-zinc-600">
+                  Federal only — long-term capital gains 20% + net investment
+                  income tax 3.8% · Texas: no state income tax
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="b"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-500/40 bg-emerald-500/10">
+                      <Globe className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                        Scenario B
+                      </p>
+                      <h1 className="text-xl font-medium text-zinc-200">
+                        OpCo + DomainCo
+                      </h1>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1">
+                    <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+                    <AnimatedM
+                      value={domainNet}
+                      prefix="+"
+                      className="font-mono text-sm tabular-nums text-emerald-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <SliderBlock
+                    label="ColdEmail.com asset value"
+                    display={fmtM(domain)}
+                    min={5}
+                    max={10}
+                    step={0.25}
+                    value={domainM}
+                    onChange={setDomainM}
+                    minLabel="$5M"
+                    maxLabel="$10M"
+                  />
+                </div>
+
+                <div className="relative mt-6 rounded-xl border border-emerald-500/30 bg-zinc-900/40 p-7 overflow-hidden">
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-emerald-500/[0.05] to-transparent" />
+                  <LedgerRow
+                    label="OpCo sale proceeds"
+                    value={fmtM(exit, 0)}
+                  />
+                  <LedgerRow
+                    label="Federal tax · LTCG 20% + NIIT 3.8%"
+                    value={`−${fmtM(taxA)}`}
+                    negative
+                  />
+                  <LedgerRow
+                    label="DomainCo · ColdEmail.com"
+                    value={fmtM(domain)}
+                  />
+                  <LedgerRow
+                    label="Acquisition basis"
+                    value={`−${fmtM(DOMAIN_BASIS)}`}
+                    negative
+                    muted
+                  />
+                  <LedgerRow
+                    label="Federal tax on domain gain"
+                    value={`−${fmtM(domainTax)}`}
+                    negative
+                  />
+                  <div className="mt-8">
+                    <p className="text-[13px] uppercase tracking-wider text-zinc-500">
+                      Net proceeds
+                    </p>
+                    <AnimatedM
+                      value={netB}
+                      className="mt-1 block font-mono text-4xl md:text-[44px] font-semibold tabular-nums text-emerald-400"
+                    />
+                  </div>
+                </div>
+
+                {/* Comparison bars */}
+                <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
+                  <div className="space-y-5">
+                    <div>
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[13px] text-zinc-500">
+                          Scenario A
+                        </span>
+                        <span className="font-mono text-sm tabular-nums text-zinc-300">
+                          {fmtM(netA)}
+                        </span>
+                      </div>
+                      <div className="mt-2 h-3 rounded-full bg-zinc-800/80 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-zinc-400"
+                          animate={{ width: `${(netA / netB) * 100}%` }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 120,
+                            damping: 24,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[13px] text-zinc-500">
+                          Scenario B
+                        </span>
+                        <span className="font-mono text-sm tabular-nums text-emerald-400">
+                          {fmtM(netB)}
+                        </span>
+                      </div>
+                      <div className="mt-2 h-3 rounded-full bg-zinc-800/80 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-emerald-400"
+                          animate={{ width: "100%" }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 120,
+                            damping: 24,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="mt-6 font-mono text-[11px] leading-relaxed text-zinc-600">
+                  Federal only — long-term capital gains 20% + net investment
+                  income tax 3.8% · Texas: no state income tax
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </main>
+    </div>
+  );
+}
