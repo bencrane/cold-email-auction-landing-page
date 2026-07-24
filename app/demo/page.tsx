@@ -123,7 +123,7 @@ function SliderBlock({
 function renderProceedsLabel(props: any) {
   const { cx, cy, midAngle, outerRadius, name, value, index } = props;
   const RADIAN = Math.PI / 180;
-  const r = outerRadius + 28;
+  const r = outerRadius + 36;
   const x = cx + r * Math.cos(-midAngle * RADIAN);
   const y = cy + r * Math.sin(-midAngle * RADIAN);
   const anchor = x > cx ? "start" : "end";
@@ -132,17 +132,17 @@ function renderProceedsLabel(props: any) {
     <text textAnchor={anchor} fill={color}>
       <tspan
         x={x}
-        y={y - 8}
+        y={y - 10}
         fill="#a1a1aa"
-        fontSize={12}
+        fontSize={15}
         fontFamily="var(--font-inter)"
       >
         {name}
       </tspan>
       <tspan
         x={x}
-        y={y + 12}
-        fontSize={15}
+        y={y + 16}
+        fontSize={20}
         fontWeight={600}
         fontFamily="var(--font-geist-mono)"
       >
@@ -279,7 +279,7 @@ export default function DemoPage() {
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl px-6 py-14 md:py-16">
+        <div className="mx-auto max-w-5xl px-8 pt-16 pb-40">
           <AnimatePresence mode="wait">
             {tab === "a" ? (
               <motion.div
@@ -310,38 +310,38 @@ export default function DemoPage() {
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
                   <div className="flex flex-col items-center">
                     {/* Master HoldCo */}
-                    <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-8 py-4 text-center">
-                      <p className="text-sm font-medium text-zinc-100">
+                    <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-14 py-7 text-center">
+                      <p className="text-xl font-medium text-zinc-100">
                         Master HoldCo.
                       </p>
-                      <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                      <p className="mt-1 font-mono text-sm text-zinc-500">
                         S-Corp · Texas
                       </p>
                     </div>
 
                     {/* Connectors */}
-                    <div className="relative h-10 w-full max-w-[440px]">
-                      <div className="absolute left-1/2 top-0 h-5 w-px bg-zinc-700" />
-                      <div className="absolute top-5 left-[25%] right-[25%] h-px bg-zinc-700" />
-                      <div className="absolute left-[25%] top-5 h-5 w-px bg-zinc-700" />
-                      <div className="absolute left-[75%] top-5 h-5 w-px bg-zinc-700" />
+                    <div className="relative h-14 w-full max-w-[640px]">
+                      <div className="absolute left-1/2 top-0 h-7 w-px bg-zinc-700" />
+                      <div className="absolute top-7 left-[25%] right-[25%] h-px bg-zinc-700" />
+                      <div className="absolute left-[25%] top-7 h-7 w-px bg-zinc-700" />
+                      <div className="absolute left-[75%] top-7 h-7 w-px bg-zinc-700" />
                     </div>
 
                     {/* Subsidiaries */}
-                    <div className="grid w-full max-w-[440px] grid-cols-2 gap-6">
-                      <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-center">
-                        <p className="text-sm font-medium text-zinc-100">
+                    <div className="grid w-full max-w-[640px] grid-cols-2 gap-10">
+                      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-7 text-center">
+                        <p className="text-xl font-medium text-zinc-100">
                           Leadbird LLC
                         </p>
-                        <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                        <p className="mt-1 font-mono text-sm text-zinc-500">
                           100%
                         </p>
                       </div>
-                      <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-4 text-center">
-                        <p className="text-sm font-medium text-zinc-100">
+                      <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-6 py-7 text-center">
+                        <p className="text-xl font-medium text-zinc-100">
                           Cleverly LLC
                         </p>
-                        <p className="mt-0.5 font-mono text-[11px] text-zinc-500">
+                        <p className="mt-1 font-mono text-sm text-zinc-500">
                           % stake
                         </p>
                       </div>
@@ -354,12 +354,12 @@ export default function DemoPage() {
                   Company Economics
                 </h2>
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-7">
-                  <div className="flex justify-center py-4">
-                    <div className="flex h-44 w-44 flex-col items-center justify-center rounded-full border border-zinc-700 bg-zinc-900">
-                      <span className="font-mono text-3xl font-semibold tabular-nums text-zinc-100">
+                  <div className="flex justify-center py-8">
+                    <div className="flex h-64 w-64 flex-col items-center justify-center rounded-full border border-zinc-700 bg-zinc-900">
+                      <span className="font-mono text-5xl font-semibold tabular-nums text-zinc-100">
                         $13.2M
                       </span>
-                      <span className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                      <span className="mt-2 font-mono text-sm uppercase tracking-[0.2em] text-zinc-500">
                         ARR
                       </span>
                     </div>
@@ -418,8 +418,8 @@ export default function DemoPage() {
                   Post-Tax Proceeds
                 </h2>
                 <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-8 py-10">
-                  <div className="relative mx-auto h-[360px] w-[640px] max-w-full">
-                    <PieChart width={640} height={360}>
+                  <div className="relative mx-auto h-[480px] w-[800px] max-w-full">
+                    <PieChart width={800} height={480}>
                       <Pie
                         data={[
                           { name: "Net proceeds", value: netA },
@@ -428,8 +428,8 @@ export default function DemoPage() {
                         dataKey="value"
                         cx="50%"
                         cy="50%"
-                        innerRadius={95}
-                        outerRadius={130}
+                        innerRadius={130}
+                        outerRadius={180}
                         startAngle={90}
                         endAngle={-270}
                         stroke="none"
@@ -445,9 +445,9 @@ export default function DemoPage() {
                       <AnimatedM
                         value={exit}
                         decimals={0}
-                        className="font-mono text-3xl font-semibold tabular-nums text-zinc-100"
+                        className="font-mono text-5xl font-semibold tabular-nums text-zinc-100"
                       />
-                      <span className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                      <span className="mt-2 font-mono text-sm uppercase tracking-[0.2em] text-zinc-500">
                         Exit value
                       </span>
                     </div>
