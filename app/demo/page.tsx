@@ -52,16 +52,16 @@ function LedgerRow({
   muted?: boolean;
 }) {
   return (
-    <div className="flex items-baseline justify-between py-4 border-b border-zinc-800/60">
+    <div className="flex items-baseline justify-between py-6 border-b border-zinc-800/60">
       <span
-        className={`text-lg tracking-wide ${
+        className={`text-2xl tracking-wide ${
           muted ? "text-zinc-500" : "text-zinc-300"
         }`}
       >
         {label}
       </span>
       <span
-        className={`font-mono text-xl tabular-nums ${
+        className={`font-mono text-3xl tabular-nums ${
           negative ? "text-red-400/90" : "text-zinc-100"
         }`}
       >
@@ -383,7 +383,7 @@ export default function DemoPage() {
                 <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
                   Tax Treatment
                 </h2>
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-12">
+                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-14 py-16">
                   <LedgerRow
                     label="Enterprise exit value"
                     value={fmtM(exit, 0)}
@@ -399,8 +399,8 @@ export default function DemoPage() {
                     negative
                   />
                   <LedgerRow label="State · Texas 0%" value="−$0" muted />
-                  <div className="flex items-baseline justify-between pt-8">
-                    <span className="text-lg uppercase tracking-wider text-zinc-400">
+                  <div className="flex items-baseline justify-between pt-10">
+                    <span className="text-2xl uppercase tracking-wider text-zinc-400">
                       Total tax burden
                     </span>
                     <AnimatedM
