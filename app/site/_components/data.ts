@@ -17,7 +17,7 @@ export const VIDEOS: Video[] = [
     runtime: "42 min",
     topic:
       "How inbox providers tightened up over the last two years, and what teams had to rebuild in response.",
-    hue: "#2f5d8a",
+    family: "signal",
   },
   {
     company: "Instantly",
@@ -26,7 +26,7 @@ export const VIDEOS: Video[] = [
     runtime: "38 min",
     topic:
       "What breaks when volume grows, and the unglamorous work of keeping a large sending setup healthy.",
-    hue: "#3a6b6f",
+    family: "grid",
   },
   {
     company: "Prospeo",
@@ -35,7 +35,7 @@ export const VIDEOS: Video[] = [
     runtime: "31 min",
     topic:
       "A plain walk through how B2B contact data is sourced and verified — and why quality varies so much.",
-    hue: "#6b4f7a",
+    family: "field",
   },
   {
     company: "Clay",
@@ -44,7 +44,7 @@ export const VIDEOS: Video[] = [
     runtime: "47 min",
     topic:
       "Doing the homework at scale: what teams look up before they write, and how that changes reply rates.",
-    hue: "#8a5b3a",
+    family: "arc",
   },
 ];
 

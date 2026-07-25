@@ -3,6 +3,7 @@ import { NewsletterForm } from "./_components/NewsletterForm";
 import { PartnerFunnel } from "./_components/PartnerFunnel";
 import { VideoCard } from "./_components/VideoCard";
 import { ARTICLES, VIDEOS } from "./_components/data";
+import { Motif, familyForSection } from "./_components/Motif";
 import { Button, Eyebrow, SectionHeading, Tag } from "./_components/ui";
 
 export default function SiteHome() {
@@ -68,9 +69,15 @@ export default function SiteHome() {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1.15fr_1fr]">
           <article>
-            <div className="flex aspect-[16/10] items-end rounded-sm bg-gradient-to-br from-[#2f5d8a] to-[var(--site-navy)] p-7">
-              <Tag tone="accent">{lead.section}</Tag>
-            </div>
+            <Motif
+              seed={lead.title}
+              family={familyForSection(lead.section)}
+              className="aspect-[16/10] rounded-sm"
+            >
+              <div className="flex h-full items-end p-7">
+                <Tag tone="accent">{lead.section}</Tag>
+              </div>
+            </Motif>
             <h3 className="mt-6 font-serif text-3xl leading-tight text-[var(--site-navy)]">
               {lead.title}
             </h3>

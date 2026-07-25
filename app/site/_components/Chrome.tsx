@@ -20,7 +20,7 @@ export function SiteNav() {
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--site-rule)] bg-[var(--site-cream)]/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/site" className="flex items-baseline gap-2">
+        <Link href="/site" className="flex items-baseline">
           <span className="font-serif text-xl tracking-tight text-[var(--site-navy)]">
             ColdEmail
           </span>
