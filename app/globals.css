@@ -132,3 +132,28 @@
     @apply text-foreground;
   }
 }
+/* ── /site prototype ───────────────────────────────────────────────────────
+   Palette scoped to .site-theme so the cream/navy system cannot leak into the
+   landing page or /demo.
+
+   The base layer above pins the document for the landing page — black, fixed,
+   overflow hidden. /site scrolls inside its own container instead of undoing
+   that globally. */
+.site-theme {
+  --site-cream: #faf6ee;
+  --site-cream-deep: #f2ebdd;
+  --site-paper: #fffdf8;
+  --site-navy: #10243f;
+  --site-navy-soft: #1c3b63;
+  --site-ink: #16202e;
+  --site-muted: #5b6b7f;
+  --site-rule: #ddd3c0;
+  --site-rule-soft: #ebe3d3;
+  --site-accent: #a8792c;
+}
+
+/* Body stays pinned by the base layer; this just stops black showing through
+   at the edges on overscroll. */
+body:has(.site-theme) {
+  background-color: #faf6ee;
+}
