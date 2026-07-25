@@ -1,3 +1,4 @@
+import { Motif, type MotifFamily } from "./Motif";
 import { Tag } from "./ui";
 
 export type Video = {
@@ -6,8 +7,7 @@ export type Video = {
   title: string;
   runtime: string;
   topic: string;
-  /* Two-tone thumbnail stand-in — no third-party assets on a prototype. */
-  hue: string;
+  family: MotifFamily;
 };
 
 function PlayGlyph() {
@@ -27,17 +27,14 @@ function PlayGlyph() {
 export function VideoCard({ video }: { video: Video }) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-sm border border-[var(--site-rule)] bg-[var(--site-paper)] transition-colors hover:border-[var(--site-navy)]/40">
-      <div
-        className="relative flex aspect-video items-center justify-center"
-        style={{
-          background: `linear-gradient(140deg, ${video.hue} 0%, var(--site-navy) 100%)`,
-        }}
-      >
-        <PlayGlyph />
+      <Motif seed={video.title} family={video.family} className="aspect-video">
+        <div className="flex h-full items-center justify-center">
+          <PlayGlyph />
+        </div>
         <span className="absolute bottom-3 right-3 rounded-sm bg-[var(--site-navy)]/85 px-2 py-0.5 font-mono text-[11px] text-[var(--site-cream)]">
           {video.runtime}
         </span>
-      </div>
+      </Motif>
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center gap-2">
           <Tag tone="navy">{video.company}</Tag>

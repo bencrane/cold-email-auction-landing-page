@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { NewsletterForm } from "../_components/NewsletterForm";
 import { ARTICLES } from "../_components/data";
+import { Motif, familyForSection } from "../_components/Motif";
 import { Eyebrow, Tag } from "../_components/ui";
 
 export const metadata: Metadata = {
@@ -30,9 +31,15 @@ export default function PlaybookPage() {
       {/* Lead story */}
       <section className="mx-auto max-w-6xl px-6 py-14">
         <article className="grid gap-8 md:grid-cols-[1fr_1.1fr] md:items-center">
-          <div className="flex aspect-[16/11] items-end rounded-sm bg-gradient-to-br from-[#2f5d8a] to-[var(--site-navy)] p-7">
-            <Tag tone="accent">{lead.section}</Tag>
-          </div>
+          <Motif
+            seed={lead.title}
+            family={familyForSection(lead.section)}
+            className="aspect-[16/11] rounded-sm"
+          >
+            <div className="flex h-full items-end p-7">
+              <Tag tone="accent">{lead.section}</Tag>
+            </div>
+          </Motif>
           <div>
             <p className="text-[13px] uppercase tracking-[0.14em] text-[var(--site-accent)]">
               Latest
