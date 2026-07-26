@@ -1900,7 +1900,8 @@ const TABS: { id: TabId; kicker?: string; label: string }[] = [
   { id: "a", label: "Scenario A" },
   { id: "new", label: "Scenario B" },
   { id: "cmp", label: "Comparison" },
-  { id: "b", label: "OpCo + DomainCo" },
+  // "OpCo + DomainCo" (id "b") is intentionally omitted from the nav — the
+  // panel still renders if the tab is set programmatically.
 ];
 
 export default function DemoPage() {
@@ -2091,7 +2092,7 @@ export default function DemoPage() {
                       <p className="mt-1 text-center font-mono text-sm text-zinc-500">
                         100%
                       </p>
-                      <div className="mt-5 grid grid-cols-3 gap-3">
+                      <div className="mt-5 grid grid-cols-2 gap-3">
                         <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-4 py-5 text-center">
                           <p className="text-base font-medium text-zinc-200">
                             LeadBird LLC
@@ -2106,14 +2107,6 @@ export default function DemoPage() {
                           </p>
                           <p className="mt-1 font-mono text-xs text-zinc-500">
                             % stake
-                          </p>
-                        </div>
-                        <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-4 py-5 text-center">
-                          <p className="text-base font-medium text-zinc-200">
-                            Cold Email Media
-                          </p>
-                          <p className="mt-1 font-mono text-xs text-zinc-500">
-                            ToFu engine
                           </p>
                         </div>
                       </div>
