@@ -719,8 +719,6 @@ function NewScenario({ controls }: { controls: NewControls }) {
     setDomainMult,
     distRate,
     setDistRate,
-    mediaAvoided,
-    setMediaAvoided,
   } = controls;
   const {
     operatingProfit,
@@ -1052,60 +1050,6 @@ function NewScenario({ controls }: { controls: NewControls }) {
             {fmtDollars(royalty)}
           </span>
         </div>
-      </div>
-
-      {/* Avoided Media Replacement */}
-      <h2 className="mt-12 text-2xl font-semibold uppercase tracking-wide text-zinc-100">
-        Avoided Media Replacement
-      </h2>
-      <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-12 py-14">
-        <div className="mx-auto max-w-2xl">
-          <p className="text-center text-[13px] uppercase tracking-wider text-zinc-500">
-            Equivalent pipeline bought on Google Ads
-          </p>
-          <span className="mt-2 block text-center font-mono text-7xl font-semibold tabular-nums text-emerald-400">
-            {fmtDollars(mediaAvoided)}
-          </span>
-          <Slider
-            className="mt-12 [&_[data-slot=slider-track]]:bg-zinc-800 [&_[data-slot=slider-range]]:bg-zinc-100 [&_[data-slot=slider-thumb]]:border-zinc-400"
-            min={0}
-            max={2_000_000}
-            step={50_000}
-            value={[mediaAvoided]}
-            onValueChange={([v]) => setMediaAvoided(v)}
-          />
-          <div className="relative mt-4 h-6">
-            {[0, 500_000, 1_000_000, 1_500_000, 2_000_000].map((v) => (
-              <button
-                key={v}
-                onClick={() => setMediaAvoided(v)}
-                className={`absolute -translate-x-1/2 font-mono text-sm tabular-nums transition-colors ${
-                  v === mediaAvoided
-                    ? "text-zinc-100"
-                    : "text-zinc-600 hover:text-zinc-300"
-                }`}
-                style={{ left: `${(v / 2_000_000) * 100}%` }}
-              >
-                {v === 0 ? "$0" : `$${v / 1_000_000}M`}
-              </button>
-            ))}
-          </div>
-
-          <p className="mt-14 border-t border-zinc-800/60 pt-10 text-xl leading-relaxed text-zinc-300">
-            Cold Email Media capturing organic search on{" "}
-            <span className="text-emerald-400">ColdEmail.com</span> saves{" "}
-            <span className="font-mono text-emerald-400">
-              {fmtDollars(mediaAvoided)}
-            </span>{" "}
-            / year compared to OperatingGroup buying equivalent pipeline for
-            LeadBird / Cleverly on Google Ads.
-          </p>
-        </div>
-        <p className="mt-8 font-mono text-[11px] leading-relaxed text-zinc-600">
-          Input, not a derivation — set it to whatever the equivalent paid
-          pipeline actually costs. It sits outside the model and does not feed
-          operating profit, the royalty, or anything at exit.
-        </p>
       </div>
 
       {/* Operating Profit — bifurcated */}
@@ -1945,8 +1889,9 @@ export default function DemoPage() {
   const exit = exitMult * ARR;
   const domain = domainM * 1_000_000;
 
-  // Scenario A
-  const taxA = exit * TAX_RATE;
+  // Scenario A — no DomainCo, so nothing is allocable to capital gains. The
+  // whole exit is ordinary income at 37%.
+  const taxA = exit * ORDINARY_RATE;
   const netA = exit - taxA;
 
   // Scenario A operating chain — no DomainCo, so one undivided stream.
@@ -2260,13 +2205,8 @@ export default function DemoPage() {
                     value={fmtM(exit, 0)}
                   />
                   <LedgerRow
-                    label="Federal · Long-term capital gains 20%"
-                    value={`−${fmtM(exit * 0.2)}`}
-                    negative
-                  />
-                  <LedgerRow
-                    label="Federal · Net investment income tax 3.8%"
-                    value={`−${fmtM(exit * 0.038)}`}
+                    label="Federal · Ordinary income 37%"
+                    value={`−${fmtM(exit * ORDINARY_RATE)}`}
                     negative
                   />
                   <LedgerRow label="State · Texas 0%" value="−$0" muted />
@@ -2314,8 +2254,9 @@ export default function DemoPage() {
                 </div>
 
                 <p className="mt-6 font-mono text-[11px] leading-relaxed text-zinc-600">
-                  Federal only — long-term capital gains 20% + net investment
-                  income tax 3.8% · Texas: no state income tax
+                  Federal only — ordinary income 37% on the entire exit;
+                  with no DomainCo there is nothing to allocate to capital
+                  gains · Texas: no state income tax
                 </p>
               </motion.div>
             ) : tab === "new" ? (
