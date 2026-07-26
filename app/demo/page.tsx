@@ -817,9 +817,7 @@ function NewScenario({ controls }: { controls: NewControls }) {
                   <p className="text-lg font-medium text-zinc-100">
                     Cold Email Media
                   </p>
-                  <p className="mt-1 font-mono text-sm text-zinc-500">
-                    ToFu engine
-                  </p>
+                  <p className="mt-1 font-mono text-sm text-zinc-500">100%</p>
                 </div>
               </div>
             </div>
